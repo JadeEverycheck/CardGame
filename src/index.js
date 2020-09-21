@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import HallOfFame, { FAKE_HOF } from './HallOfFame'
+import HighScoreInput from './HighScoreInput'
 import shuffle from 'lodash.shuffle';
 import PropTypes from 'prop-types'
 
@@ -43,6 +44,7 @@ class App extends React.Component {
     guesses : 0,
     currentPair : [],
     matchedCardIndices : [],
+    hallOfFame : null,
   }
 
   generateCards() {
@@ -92,9 +94,15 @@ class App extends React.Component {
     return indexMatched ? 'visible' : 'hidden'
   }
 
+  displayHallOfFame = (hallOfFame) => {
+    this.setState({ hallOfFame })
+  }
+
   render() {
-    const {cards, guesses, matchedCardIndices} = this.state
-    const won = matchedCardIndices.length === cards.length
+    const {cards, guesses, matchedCardIndices, hallOfFame} = this.state
+    // TEMPORAIRE
+    const won = matchedCardIndices.length === 4 // cards.length
+    // const won = matchedCardIndices.length === cards.length
     return (
       <div className="memory">
         <GuessCount guesses={guesses} />
@@ -106,7 +114,14 @@ class App extends React.Component {
         		key={index}
         		onClick={this.handleCardClick} />
         ))}
-		{won && (<p>'Coucou' <HallOfFame entries={FAKE_HOF} /> </p>)}
+    {
+      won &&
+        (hallOfFame ? (
+          <HallOfFame entries={hallOfFame} />
+          ) : (
+         <HighScoreInput guesses={guesses} onStored={this.displayHallOfFame} />
+      ))
+    }
       </div>
     )
   }
